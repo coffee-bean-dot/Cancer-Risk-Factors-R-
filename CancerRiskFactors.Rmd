@@ -1,0 +1,160 @@
+---
+title: "Cancer Data Analysis"
+output: github_document
+date: "10/20/2025"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## GitHub Documents
+
+This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
+
+## Including Code
+
+You can include R code in the document as follows:
+
+```{r cars}
+library(tidyverse)
+cancer_risk_factors <- read_csv("~/Downloads/data_csvs/cancer-risk-factors.csv")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r age and type, echo=FALSE}
+cancer_risk_factors %>% 
+  ggplot(aes(x=Age, fill = Cancer_Type)) + 
+  geom_density(alpha=0.7)
+```
+
+```{r}
+cancer_risk_factors %>% 
+  ggplot(aes(x=Age, fill = Cancer_Type, y="")) +
+  geom_boxplot(alpha=0.7) + 
+  scale_fill_brewer(palette = "Blues") +
+  labs(x = "Age", title = "Distribution of GPAs", y="") + 
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(face = "bold", size = 12),
+    panel.grid.major.y = element_blank()
+  ) 
+```
+
+```{r age and cancer type summary}
+#generation of data, basic table
+age_type_summary <- cancer_risk_factors %>%
+  group_by(Cancer_Type) %>%
+  summarise(
+    Q1 = quantile(Age, 0.25, na.rm = TRUE),
+    Median = median(Age, na.rm = TRUE),
+    Q3 = quantile(Age, 0.75, na.rm = TRUE),
+    IQR = IQR(Age, na.rm = TRUE),
+    Lower_Bound = Q1 - 1.5 * IQR,
+    Upper_Bound = Q3 + 1.5 * IQR,
+    Outlier_Count = sum(Age < Lower_Bound | Age > Upper_Bound, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+library(knitr)
+#table with title!
+kable(age_type_summary,
+      caption = "Table 1. Summary of Age by Cancer Type",
+      digits = 1,
+      align = "c")
+
+#fancy
+library(gt)
+
+```
+```{r fancy table, eval = FALSE}
+age_type_summary %>% 
+  gt() %>% 
+  tab_header(
+    title = md("***Table 1. Summary of Age by Cancer Type***"),
+    subtitle = md("Includes Q1, Median, Q3")
+  ) %>% 
+  fmt_number(
+    columns = c(Q1, Median, Q3),
+    decimals = 1
+  ) %>% 
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels()
+  )
+
+```
+
+```{r}
+cancer_yn = cancer_risk_factors %>% 
+  mutate(Gender = ifelse(Gender == 0, "F", "M"),
+         Family_History = ifelse(Family_History == 0, "No", "Yes"))
+
+cancer_numbers <- cancer_risk_factors %>% select(where(is.numeric))
+
+cor_matrix <- cor(cancer_numbers[,"Smoking"])
+
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+
+cancer_risk_factors_long <- cancer_risk_factors %>%
+  pivot_longer(cols = c(Smoking, Alcohol_Use,Obesity, Diet_Red_Meat,Diet_Salted_Processed, Fruit_Veg_Intake,Physical_Activity,Air_Pollution,Occupational_Hazards, Calcium_Intake),
+               names_to = "Risk_Factors",
+               values_to = "Value")
+
+ggplot(cancer_risk_factors_long, 
+       aes(x = Overall_Risk_Score, y = Value, color = `Risk Factors`)) +
+  geom_point(alpha = 0.7, shape = 4) +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +
+  labs(title = "Smoking and Alcohol Use by Risk Level",
+       x = "Risk Level", y = "Behavior Value") +
+  theme_minimal()
+
+```
+
+```{r heatmap}
+#load libraries
+library(reshape2)
+library(corrplot)
+
+#convert df to matrix and remove columns you don't want
+cor_matrix <- cor(cancer_numbers[, !names(cancer_numbers) %in% c("Gender","Family_History")], use = "complete.obs") 
+
+#melt to structure 
+melted_corr <- melt(round(cor_matrix, 2))
+
+#generate heatmap!
+print(ggplot(melted_corr, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = value), color = "black", size = 2.5) +
+  scale_fill_gradient2(low = "green", mid = "white", high = "Red", midpoint = 0) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  labs(title = "Correlation Heatmap", fill = "r") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5)  # ⬅️ bold title
+  ) +
+  labs(title = "Correlation Heatmap", fill = "r", x="", y=""))
+
+
+```
+
+```{r}
+print(sort(cor_matrix[,"Overall_Risk_Score"], decreasing = TRUE) %>% round(4))
+
+library(kableExtra)
+
+kable(sort(cor_matrix[,"Overall_Risk_Score"], decreasing = TRUE),
+      caption = "<b>List 1. Correlation with Overall Risk Score</b>",
+      digits = 4,
+      align = "c") %>% 
+  kable_styling(full_width = TRUE) %>%
+   scroll_box(height = "400px")
+
+#, bootstrap_options = c("striped", "hover")
+```
