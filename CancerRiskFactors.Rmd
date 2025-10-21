@@ -98,7 +98,7 @@ cancer_risk_factors_long <- cancer_risk_factors %>%
                values_to = "Value")
 
 ggplot(cancer_risk_factors_long, 
-       aes(x = Overall_Risk_Score, y = Value, color = `Risk Factors`)) +
+       aes(x = Overall_Risk_Score, y = Value, color = Risk_Factors)) +
   geom_point(alpha = 0.7, shape = 4) +
   geom_smooth(method = "lm", se = TRUE, color = "black") +
   labs(title = "Smoking and Alcohol Use by Risk Level",
@@ -128,7 +128,7 @@ print(ggplot(melted_corr, aes(x = Var1, y = Var2, fill = value)) +
   labs(title = "Correlation Heatmap", fill = "r") +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5)  # ⬅️ bold title
+    plot.title = element_text(face = "bold", size = 14, hjust = 0.5)  # bold title
   ) +
   labs(title = "Correlation Heatmap", fill = "r", x="", y=""))
 
