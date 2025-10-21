@@ -7,23 +7,14 @@ date: "10/20/2025"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## Brief analysis of the Cancer Risk Factors Dataset from Kaggle [Link to dataset](https://example.com/data)
 
-## GitHub Documents
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
+```{r import}
 library(tidyverse)
 cancer_risk_factors <- read_csv("~/Downloads/data_csvs/cancer-risk-factors.csv")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
+## Visualizations
 
 ```{r age and type, echo=FALSE}
 cancer_risk_factors %>% 
@@ -36,7 +27,7 @@ cancer_risk_factors %>%
   ggplot(aes(x=Age, fill = Cancer_Type, y="")) +
   geom_boxplot(alpha=0.7) + 
   scale_fill_brewer(palette = "Blues") +
-  labs(x = "Age", title = "Distribution of GPAs", y="") + 
+  labs(x = "Age", title = "Prevalence of Cancer", y="") + 
   theme(
     plot.title = element_text(face = "bold", size = 14),
     axis.title = element_text(face = "bold", size = 12),
