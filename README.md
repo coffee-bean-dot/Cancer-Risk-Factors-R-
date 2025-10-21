@@ -21,6 +21,7 @@ All analysis and visualization are done in **R** using tidyverse, ggplot2, gt, a
 - **Heatmap** of risk factor correlations  
 - **Summary tables** (generated using `kable` and `gt`)
 
+**Example of the Correlation Heatmap**
 <p align="center">
   <img src="CRF_CorrelationHeat.png" alt="Image of the Heatmap" width="500">
 </p>
