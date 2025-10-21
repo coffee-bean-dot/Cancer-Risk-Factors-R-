@@ -1,7 +1,7 @@
 
 # Cancer Risk Factors Analysis (R)
 
-This project explores relationships between age, lifestyle habits, and environmental exposures in a **Cancer Risk Factors** dataset (sourced from [Kaggle]((https://www.kaggle.com/datasets/tarekmasryo/cancer-risk-factors-dataset))).  
+This project explores relationships between age, lifestyle habits, and environmental exposures in a **Cancer Risk Factors** dataset (sourced from [Kaggle](https://www.kaggle.com/datasets/tarekmasryo/cancer-risk-factors-dataset).  
 All analysis and visualization are done in **R** using tidyverse, ggplot2, gt, and related packages.
 
 ---
